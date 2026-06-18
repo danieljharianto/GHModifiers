@@ -1,6 +1,7 @@
 using System;
 using Eto.Forms;
 using Rhino;
+using Rhino.DocObjects;
 using Rhino.UI;
 
 namespace HelloRhinoCommon.UI;
@@ -11,6 +12,14 @@ public sealed class ModifierObjectPropertiesPage : ObjectPropertiesPage
     private ModifierStackPanel? _panel;
 
     public override string EnglishPageTitle => "GGH Stack";
+
+    // Without this override SupportedTypes defaults to "nothing", so no selected
+    // object ever qualifies and the page tab never appears, even though ShouldDisplay
+    // returns true. These mirror ModifierEngine.IsSupportedGeometryObject
+    // (Point, Curve, Brep, Extrusion, Mesh, SubD).
+    public override ObjectType SupportedTypes =>
+        ObjectType.Point | ObjectType.Curve | ObjectType.Brep |
+        ObjectType.Extrusion | ObjectType.Mesh | ObjectType.SubD;
 
     public override string PageIconEmbeddedResourceString => "HelloRhinoCommon.Logo_3.ico";
 

@@ -32,6 +32,21 @@
     <EmbeddedResource Include="Logo_1.svg" />
     <EmbeddedResource Include="Logo_2.ico" />
     <EmbeddedResource Include="Logo_3.ico" />
+    <!-- ExcludeAssets="runtime": compile against Grasshopper and its transitive Rhino
+         SDK assemblies (RhinoCommon, Rhino.UI, Eto, GH_IO) but do NOT copy them into the
+         plugin output or list them as runtime deps. The plugin must use the copies Rhino
+         already has loaded; shipping our own makes Rhino load a second, type-incompatible
+         RhinoCommon and the plug-in silently fails to load. -->
+    <PackageReference Include="Grasshopper" Version="8.32.26160.13001" ExcludeAssets="runtime" />
+
+    <!-- Rhino does NOT ship these (verified: not present anywhere under the Rhino 8
+         install), yet the plugin needs them at runtime. System.Drawing.Color is touched
+         during OnLoad via StackPreviewConduit's static field. Reference them explicitly so
+         they ARE copied to the output folder, since the ExcludeAssets above would otherwise
+         strip them from Grasshopper's transitive graph and OnLoad would throw
+         FileNotFoundException (shown as "plug-in failed to initialize" on startup). -->
+    <PackageReference Include="System.Drawing.Common" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Win32.SystemEvents" Version="7.0.0" />
 
     <Reference Include="RhinoCommon" Condition="Exists('$(RhinoCommonHintPath)')">
       <HintPath>$(RhinoCommonHintPath)</HintPath>
