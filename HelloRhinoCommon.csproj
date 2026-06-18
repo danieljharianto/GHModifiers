@@ -12,6 +12,17 @@
     <NoWarn>NU1701</NoWarn>
   </PropertyGroup>
 
+  <!-- Build Debug output straight to a stable local folder OUTSIDE OneDrive. Install this
+       folder's HelloRhinoCommon.rhp once via PlugInManager; every rebuild then refreshes the
+       installed plugin in place. Avoids the OneDrive reparse-point files that Rhino's Install
+       dialog rejects, the bin\Debug\net7.0 nesting, and the .rhp lock from OneDrive sync.
+       Release output is left at its default (bin\Release) for Yak packaging. -->
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <OutputPath>C:\RhinoPlugins\GHModifiers\</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+  </PropertyGroup>
+
   <PropertyGroup>
     <GrasshopperHintPath>/Applications/Rhino 8.app/Contents/Frameworks/RhCore.framework/Versions/A/Resources/ManagedPlugIns/GrasshopperPlugin.rhp/Grasshopper.dll</GrasshopperHintPath>
     <GhIoHintPath>/Applications/Rhino 8.app/Contents/Frameworks/RhCore.framework/Versions/A/Resources/ManagedPlugIns/GrasshopperPlugin.rhp/GH_IO.dll</GhIoHintPath>
@@ -29,15 +40,12 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <EmbeddedResource Include="Logo_1.svg" />
-    <EmbeddedResource Include="Logo_2.ico" />
-    <EmbeddedResource Include="Logo_3.ico" />
     <!-- ExcludeAssets="runtime": compile against Grasshopper and its transitive Rhino
          SDK assemblies (RhinoCommon, Rhino.UI, Eto, GH_IO) but do NOT copy them into the
          plugin output or list them as runtime deps. The plugin must use the copies Rhino
          already has loaded; shipping our own makes Rhino load a second, type-incompatible
          RhinoCommon and the plug-in silently fails to load. -->
-    <PackageReference Include="Grasshopper" Version="8.32.26160.13001" ExcludeAssets="runtime" />
+    <PackageReference Include="Grasshopper" Version="8.31.26126.13431" ExcludeAssets="runtime" />
 
     <!-- Rhino does NOT ship these (verified: not present anywhere under the Rhino 8
          install), yet the plugin needs them at runtime. System.Drawing.Color is touched
@@ -68,6 +76,21 @@
       <HintPath>$(GhIoHintPath)</HintPath>
       <Private>false</Private>
     </Reference>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   
 </Project>

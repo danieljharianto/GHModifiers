@@ -27,16 +27,44 @@ namespace HelloRhinoCommon
         ///<summary>Gets the only instance of the HelloRhinoCommonPlugin plug-in.</summary>
         public static HelloRhinoCommonPlugin Instance { get; private set; } = null!;
 
-        public override PlugInLoadTime LoadTime => PlugInLoadTime.AtStartup;
+        // Load on demand (first command / UI request), NOT at startup. Loading AtStartup
+        // and force-loading Grasshopper that early (before Rhino's UI is ready) destabilizes
+        // Grasshopper -- it can leave GH unable to open. By the time the user invokes this
+        // plug-in, Rhino and Grasshopper are fully initialized and loading is safe.
+        public override PlugInLoadTime LoadTime => PlugInLoadTime.WhenNeeded;
 
         internal ModifierEngine Engine { get; private set; } = null!;
 
+        // Grasshopper's Rhino plug-in GUID. We depend on its assemblies (GH_Document, etc.).
+        private static readonly Guid GrasshopperPlugInId =
+            new Guid("b45a29b1-4343-4035-989e-044e8580d9cf");
+
         protected override LoadReturnCode OnLoad(ref string errorMessage)
         {
-            Engine = new ModifierEngine();
-            RhinoApp.Initialized += OnRhinoInitialized;
-            RhinoApp.Idle += OnRhinoIdle;
-            return LoadReturnCode.Success;
+            try
+            {
+                // The engine's type graph references Grasshopper types (GH_Document, etc.).
+                // Ensure Grasshopper is loaded before we touch the engine so those types
+                // resolve. This runs on demand (LoadTime = WhenNeeded), i.e. after Rhino is
+                // fully up, so loading Grasshopper here is safe.
+                if (!PlugIn.LoadPlugIn(GrasshopperPlugInId))
+                {
+                    errorMessage = "HelloRhinoCommon requires Grasshopper, which could not be loaded.";
+                    return LoadReturnCode.ErrorShowDialog;
+                }
+
+                Engine = new ModifierEngine();
+                RhinoApp.Initialized += OnRhinoInitialized;
+                RhinoApp.Idle += OnRhinoIdle;
+                return LoadReturnCode.Success;
+            }
+            catch (Exception ex)
+            {
+                // Surface the real exception instead of the generic popup, so the next
+                // failure tells us exactly what went wrong.
+                errorMessage = "HelloRhinoCommon failed to initialize: " + ex;
+                return LoadReturnCode.ErrorShowDialog;
+            }
         }
 
         protected override void OnShutdown()
