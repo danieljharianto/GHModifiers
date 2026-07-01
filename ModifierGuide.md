@@ -14,10 +14,9 @@ Geometry flows as a **list**. If a modifier outputs 6 surfaces, the next modifie
 
 Create two GH groups with exact NickNames:
 
-| Group | Purpose |
-|-------|---------|
-| **Inputs** | Contains all user-facing input parameters (sliders, numbers, points, booleans, colors, geometry, strings) |
-| **Outputs** | Contains all published output parameters — including the optional `GeomOut` geometry pipe and any published value outputs (numbers, strings, etc.) |
+| Group			| Purpose																																				|
+| **Inputs**	| Contains all user-facing input parameters (sliders, numbers, points, booleans, colors, geometry, strings)												|
+| **Outputs**	| Contains all published output parameters — including the optional `GeomOut` geometry pipe and any published value outputs (numbers, strings, etc.)	|
 
 ## Inputs Group
 
@@ -47,17 +46,17 @@ Place params inside the Outputs group to publish values downstream. Other modifi
 ┌─────────────────────────────────────────────────┐
 │                                                 │
 │   [Geometry: "GeomIn"]  ──►  [your logic]       │
-│         (standalone, unwired left side)          │
+│         (standalone, unwired left side)         │
 │                                                 │
 │   ┌── Inputs ──────────────┐                    │
 │   │  [Number Slider: "Amt"]│──►  [your logic]   │
-│   │  [Boolean: "Flip"]     │──►                  │
+│   │  [Boolean: "Flip"]     │──►  [your logic]   │
 │   └────────────────────────┘                    │
 │                                                 │
 │                        [your logic]  ──►        │
 │   ┌── Outputs ─────────────┐                    │
-│   │  [Geometry: "GeomOut"] │                     │
-│   │  [Number: "Area"]      │                     │
+│   │  [Geometry: "GeomOut"] │                    │
+│   │  [Number: "Area"]      │                    │
 │   └────────────────────────┘                    │
 │                                                 │
 └─────────────────────────────────────────────────┘

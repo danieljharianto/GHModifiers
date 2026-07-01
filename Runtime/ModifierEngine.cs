@@ -1930,6 +1930,17 @@ internal sealed class ModifierEngine : IDisposable
     private static bool TryCreateOutputDescriptor(IGH_DocumentObject documentObject, out ModifierOutputDescriptor? descriptor)
     {
         descriptor = null;
+
+        // A Grasshopper Panel (GH_Panel) is an IGH_Param, but it is not one of the concrete
+        // Param_* types TryGetSupportedParamKind recognizes, so it would otherwise be skipped.
+        // Surface it explicitly as a read-only String output so a wired panel's text shows up
+        // in the stack panel. Output-only by design: panels are not offered as editable inputs.
+        if (documentObject is GH_Panel panelParam)
+        {
+            descriptor = CreateOutputDescriptor(panelParam, ModifierIoKind.String);
+            return true;
+        }
+
         if (documentObject is not IGH_Param param || !TryGetSupportedParamKind(param, out var kind))
         {
             return false;

@@ -20,3 +20,7 @@ using Rhino.PlugIns;
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 // This will also be the Guid of the Rhino plug-in
 [assembly: Guid("25dddecb-e369-4967-a69a-9313855398bc")] 
+
+
+// Keep in mind to set RunDotNet to CORE whenever copying the .rhp file to the Rhino plug-ins folder !
+// Still much of works for building the UI, considerng all the buttons and interface created using .eto
